@@ -1,16 +1,13 @@
 import * as THREE from '../build/three.module.js';
-import { createCuboid } from './helperfunctions.js';
 import { getRandomInt } from './numberfunctions.js';
 import { create2DArray } from './collections.js';
-import { createCuboidSides} from './helperfunctions.js';
 
 
 export function generateMapData(SIZE) {
 	var map = create2DArray(SIZE); // Array of heights of corners of each plane
 	for (var z=0 ; z<SIZE-1 ; z++) {
 		for (var x=0 ; x<SIZE-1 ; x++) {
-			var rnd = 0;//getRandomInt(0, 4);
-			map[x][z] = rnd;
+			map[x][z] = 0;
 		}
 	}
 	
@@ -92,13 +89,23 @@ export function createSentinel(loader, callback) {
 			if ( child instanceof THREE.Mesh ) {
 				//child.material.ambient.setHex(0xFF0000);
 				child.material.color.setHex(0xFF0000);
-				}
-			});
-							 
+				console.log("Changed Sentinel colour");
+			}
+		});
+
 		obj.components = {};
 		obj.components.absorb = 1;
+		obj.components.seenPlayer = 0;
 		obj.name = "Sentinel";
 		callback(obj);
+	},
+	// called when loading is in progresses
+	function ( xhr ) {
+		//console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+	},
+	// called when loading has errors
+	function ( error ) {
+		console.log( 'An error happened:' + error);
 	});
 
 }
@@ -113,20 +120,32 @@ export function createTree(loader, callback) {
 			if ( child instanceof THREE.Mesh ) {
 				//child.material.ambient.setHex(0xFF0000);
 				child.material.color.setHex(0x00FF00);
-				}
-			});
-							 
-		obj.components = {};
-		obj.components.absorb = 1;
+			}
+		});
 		obj.name = "Tree";
+
 		callback(obj);
+	},
+	// called when loading is in progresses
+	function ( xhr ) {
+		//console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+	},
+	// called when loading has errors
+	function ( error ) {
+		console.log( 'An error happened:' + error);
 	});
 
 }
 
+
+export function addTreeComponents(obj) {
+	obj.components = {};
+	obj.components.absorb = 1;
+}
+
+
 export function createCube(loader, callback) {
 	loader.load("models/block.obj", function(obj) {
-
 		//var box = new THREE.Box3().setFromObject( obj );
 		//console.log( box.min, box.max, box.getSize() );
 
@@ -134,17 +153,59 @@ export function createCube(loader, callback) {
 			if ( child instanceof THREE.Mesh ) {
 				//child.material.ambient.setHex(0xFF0000);
 				child.material.color.setHex(0xbc7a07);
-				}
-			});
-							 
+			}
+		});
+
+		obj.name = "Cube";
+		//addCubeComponents(obj)
+		callback(obj);
+	},
+	// called when loading is in progresses
+	function ( xhr ) {
+		//console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+	},
+	// called when loading has errors
+	function ( error ) {
+		console.log( 'An error happened:' + error);
+	});
+}
+
+
+export function addCubeComponents(obj) {
 		obj.components = {};
 		obj.components.absorb = 2;
 		obj.components.land = 1;
 		obj.components.build = 1;
 		obj.components.cube = 1;
-		obj.name = "Cube";
-		callback(obj);
-	});
-
 }
+
+
+export function createSentry(loader, callback) {
+	loader.load("models/sentry.obj", function(obj) {
+		//var box = new THREE.Box3().setFromObject( obj );
+		//console.log( box.min, box.max, box.getSize() );
+
+		obj.traverse( function ( child ) {
+			if ( child instanceof THREE.Mesh ) {
+				//child.material.ambient.setHex(0xFF0000);
+				child.material.color.setHex(0xff2222);
+				console.log("Changed Sentry colour");
+			}
+		});
+		obj.name = "Sentry";
+		obj.components = {};
+		obj.components.absorb = 1;
+		obj.components.seenPlayer = 0;
+		callback(obj);
+	},
+	// called when loading is in progresses
+	function ( xhr ) {
+		//console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+	},
+	// called when loading has errors
+	function ( error ) {
+		console.log( 'An error happened:' + error);
+	});
+}
+
 
